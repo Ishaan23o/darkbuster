@@ -7,7 +7,7 @@
         "default_popup": "popup.html"
     },
     "content_security_policy": {
-        "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;"
+        "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' http://localhost:8000 https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;"
     },
     "permissions": [
         "activeTab",

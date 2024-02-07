@@ -146,14 +146,14 @@
                     product.</span>
                 <div class="form-group mb-2 mt-2">
                     <label for="shownPrice">Price Shown</label>
-                    <input type="number" class="form-control" id="shownPrice" aria-describedby="emailHelp"
+                    <input type="number" class="form-control" id="shownPrice" aria-describedby="emailHelp" min="0"
                         placeholder="Enter Price in Rs" required>
                     <small id="shownHelp" class="form-text text-muted" style="font-size: x-small;">The Price Shown to
                         you</small>
                 </div>
                 <div class="form-group mb-2">
                     <label for="deliveryPrice">Delivery Charges (if any)</label>
-                    <input type="number" class="form-control" id="deliveryPrice" aria-describedby="emailHelp"
+                    <input type="number" class="form-control" id="deliveryPrice" aria-describedby="emailHelp" min="0"
                         placeholder="Enter Price in Rs" required>
                     <small id="deliveryHelp" class="form-text text-muted" style="font-size: x-small;">Charged either
                         during checkout or
@@ -161,7 +161,7 @@
                 </div>
                 <div class="form-group mb-2">
                     <label for="missPrice fw-bolder">Miscellaneous Charges (if any)</label>
-                    <input type="number" class="form-control" id="missPrice" aria-describedby="emailHelp"
+                    <input type="number" class="form-control" id="missPrice" aria-describedby="emailHelp" min="0"
                         placeholder="Enter Price in Rs" required>
                     <small id="missHelp" class="form-text text-muted" style="font-size: x-small;">Any other charges
                         borne by you</small>
@@ -179,7 +179,22 @@
                 <canvas id="myChart1" style='width:350px;height:250px' width="200px" height="200px"></canvas>
             </div>
             <div class="container p-0 visually-hidden" id="predictDiv">
-                Rohan ki gand mein dande do
+                <span class="text-black-50 card-text">Please Enter the price you are asked for this product.</span>
+                <div class="form-group mb-2 mt-2">
+                    <label for="askedPrice">Price Shown</label>
+                    <input type="number" class="form-control" id="askedPrice" aria-describedby="emailHelp" min="0"
+                        placeholder="Enter Price in Rs" required>
+                    <small id="shownHelp2" class="form-text text-muted" style="font-size: x-small;">The Price asked from
+                        you</small>
+                </div>
+                <div class="form-group mb-2">
+                    <label for="stateSelect2">Enter your state</label>
+                    <select class="form-control" id="stateSelect2" required>
+                    </select>
+                    <small id="stateHelp2" class="form-text text-muted" style="font-size: x-small;">Where product
+                        to be delivered</small>
+                </div>
+                <button type="button" id="submitData" class="btn btn-primary">Submit</button>
             </div>
         </div>
     </div>

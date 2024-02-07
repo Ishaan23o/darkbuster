@@ -41,6 +41,15 @@ async function query3(data) {
 	return result;
 }
 
+async function query4(data) {
+	const response = await fetch('https://api.api-ninjas.com/v1/sentiment?text=' + data.text, {
+		method: 'GET',
+		headers: { 'X-Api-Key': 'HiXqAe0KyEcYhKepejR4sQ==ZDmUzPex7cnBKk8E' },
+	})
+	const result = await response.json();
+	return result;
+}
+
 const checkSpam = async (arr) => {
 	let promises = []
 	for (let i = 0; i < 5; i++) {
@@ -127,6 +136,10 @@ const loadLocal = async (url) => {
 
 app.post("/submitPrice", mongodb.submitPrice)
 app.post("/getPrices", mongodb.getPrices)
+app.post("/getSentiment", async (req, res) => {
+	const sentiment = await query4({ text: req.body.text });
+	res.status(200).json(sentiment);
+})
 app.post("/getReview", async (req, res) => {
 	const url = req.body.url;
 	const web = req.body.web;

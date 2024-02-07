@@ -2,7 +2,7 @@ let chart = null;
 document.getElementsByClassName('myButton')[1].addEventListener('click', async () => {
     if (chart) chart.destroy();
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    console.log(tabs)
+    console.log(tabs[0])
     let data = await fetch('http://localhost:8000/getPrices', {
         method: 'POST',
         headers: headers,
