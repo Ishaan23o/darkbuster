@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', async function () {
+let chart = null;
+document.getElementsByClassName('myButton')[1].addEventListener('click', async () => {
+    if (chart) chart.destroy();
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     console.log(tabs)
     let data = await fetch('http://localhost:8000/getPrices', {
@@ -46,5 +48,5 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     };
 
-    new Chart(ctx, chartData);
+    chart = new Chart(ctx, chartData);
 });
