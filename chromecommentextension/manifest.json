@@ -1,0 +1,16 @@
+{
+    "name": "Comment Reviewer",
+    "description": "Scrapes comments and reviews them",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;"
+    },
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ]
+}

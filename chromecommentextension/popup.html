@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8;">
+    <meta http-equiv="Content-Security-Policy"
+        content="script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval';">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="chart.js"></script>
+    <title>Document</title>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            transition: margin 0.3s ease;
+            margin: 0;
+            width: 400px;
+        }
+
+        header:active {
+            transform: scale(1.01)
+        }
+
+        header {
+            background-color: #2e2e2e;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header:hover {
+            background-color: #514545;
+        }
+
+        #bodyExtension {
+            padding: 20px;
+        }
+
+        #header2 {
+            background-color: #4a5844;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #header2:hover {
+            background-color: #5c5c5c;
+        }
+
+        .card-header {
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        .card-header:hover {
+            background-color: #e0f0ff;
+        }
+
+        #clickEndpoint {
+            background-color: #0056b3;
+            border: none;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        #clickEndpoint:hover {
+            transform: scale(1.05);
+        }
+
+        #descriptionWorks,
+        #descriptionFails {
+            margin-top: 10px;
+            transition: opacity 0.3s ease;
+        }
+    </style>
+    <style>
+        input[type="range"]::-webkit-slider-thumb {
+            display: none;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            background: transparent;
+            border: none;
+            width: 0;
+        }
+
+        .float-right {
+            color: #673AB7;
+            /* Purple color */
+        }
+    </style>
+</head>
+
+<body class="text-center m-0 p-0" id="bodyExtension">
+    <div id="biasChecker">
+        <header class="p-2" id="header1">
+            <div class="input-group">
+                <img src="gif.gif" class="img-thumbnail rounded" alt="Bad Review Icon"
+                    style="width: 50px; height: 50px;">
+                <h1 class="m-2 w-75">Bias Checker<button class="p-2 pt-1 pb-1 float-end btn btn-outline-info fw-bolder"
+                        style="font-size: large;color: #fdffe0;border: 0px;background-color: rgba(86, 238, 84, 0.625);"
+                        id="goToPrice">&rarr;</button>
+                </h1>
+
+            </div>
+        </header>
+        <div class="m-0 p-1 card-header">
+            <button class="btn btn-primary m-0" id="clickEndpoint1">Review Comments</button>
+        </div>
+        <div id="descriptionWorks" class="card-footer visually-hidden m-0 p-0  mb-2 text-success">
+        </div>
+        <div id="descriptionFails" class="card-footer visually-hidden m-0 p-0  mb-2 text-danger card">
+        </div>
+        <div id="botsBox" class="card-footer visually-hidden m-0 p-0 text-dark-emphasis"
+            style="background-color: #eefeff;">
+            Here is your summary
+        </div>
+        <div id="summaryBox" class="card-footer visually-hidden m-0 p-0 text-dark-emphasis"
+            style="background-color: #fff6ef;">
+            Here is your summary
+        </div>
+    </div>
+    <div id="priceChecker" class="visually-hidden">
+        <header class="p-2" id="header2">
+            <div class="input-group">
+                <img src="gif2.gif" class="img-thumbnail rounded" alt="Bad Review Icon"
+                    style="width: 50px; height: 50px;">
+                <h1 class="m-2 w-75"><button class="p-2 pt-1 pb-1 float-start btn btn-outline-info fw-bolder"
+                        style="font-size: large;color: #fdffe0;border: 0px;background-color: rgba(86, 238, 84, 0.625);"
+                        id="goToBias">&larr;</button>Price Checker
+                </h1>
+
+            </div>
+        </header>
+        <div class="m-0 p-1 card-header">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-primary myButton">Enter Your Data</button>
+                <button type="button" class="btn btn-secondary myButton">See Analytics</button>
+                <button type="button" class="btn btn-secondary myButton">Predict Your Price</button>
+            </div>
+            <form id="submitDataForm">
+                <span class="text-black-50 card-text">Please Enter the price you paid for this
+                    product.</span>
+                <div class="form-group mb-2 mt-2">
+                    <label for="shownPrice">Price Shown</label>
+                    <input type="number" class="form-control" id="shownPrice" aria-describedby="emailHelp"
+                        placeholder="Enter Price in Rs" required>
+                    <small id="shownHelp" class="form-text text-muted" style="font-size: x-small;">The Price Shown to
+                        you</small>
+                </div>
+                <div class="form-group mb-2">
+                    <label for="deliveryPrice">Delivery Charges (if any)</label>
+                    <input type="number" class="form-control" id="deliveryPrice" aria-describedby="emailHelp"
+                        placeholder="Enter Price in Rs" required>
+                    <small id="deliveryHelp" class="form-text text-muted" style="font-size: x-small;">Charged either
+                        during checkout or
+                        delivery</small>
+                </div>
+                <div class="form-group mb-2">
+                    <label for="missPrice fw-bolder">Miscellaneous Charges (if any)</label>
+                    <input type="number" class="form-control" id="missPrice" aria-describedby="emailHelp"
+                        placeholder="Enter Price in Rs" required>
+                    <small id="missHelp" class="form-text text-muted" style="font-size: x-small;">Any other charges
+                        borne by you</small>
+                </div>
+                <div class="form-group mb-2">
+                    <label for="stateSelect">Enter your state</label>
+                    <select class="form-control" id="stateSelect" required>
+                    </select>
+                    <small id="stateHelp" class="form-text text-muted" style="font-size: x-small;">Where product
+                        delivered</small>
+                </div>
+                <button type="button" id="submitData" class="btn btn-primary">Submit</button>
+            </form>
+            <div class="container p-0 visually-hidden" id="analyticsDiv">
+                <canvas id="myChart1" style='width:350px;height:250px' width="200px" height="200px"></canvas>
+            </div>
+            <div class="container p-0 visually-hidden" id="predictDiv">
+                Rohan ki gand mein dande do
+            </div>
+        </div>
+    </div>
+    <script src="popup.js">
+    </script>
+    <script src="popupPrice.js">
+    </script>
+    <script src="popupAnalytics.js">
+    </script>
+    <script src="popupPredict.js">
+    </script>
+    <script src="bootstrap.js"></script>
+</body>
+
+</html>
