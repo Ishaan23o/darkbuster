@@ -35,13 +35,13 @@ let state = ["Andhra Pradesh",
     "Delhi",
     "Lakshadweep",
     "Puducherry"]
+    
 const select = document.getElementById('stateSelect');
 for (let k of state) {
     const node = document.createElement('option');
     node.textContent = k;
     select.appendChild(node);
 }
-
 //Button Group Script
 Array.from(document.getElementsByClassName('myButton')).forEach(element => {
     element.addEventListener('click', () => {
@@ -95,7 +95,7 @@ document.getElementById('submitData').addEventListener('click', async () => {
     url = url[0].url;
     document.getElementById('submitData').disabled = true;
     try {
-        fetch('http://localhost:8000/submitPrice', {
+           fetch('http://localhost:8000/submitPrice', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
@@ -106,6 +106,48 @@ document.getElementById('submitData').addEventListener('click', async () => {
                 selectedState: document.getElementById('stateSelect').value
             }),
         })
+      
+    } catch (err) {
+        console.log(err);
+    } finally {
+        document.getElementById('submitData').disabled = false;
+    }
+    try {
+        fetch('http://localhost:7000/insert', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                data_key: url,
+                value:{
+                additional: parseInt(document.getElementById('missPrice').value)+parseInt(document.getElementById('deliveryPrice').value),
+                location: document.getElementById('stateSelect').value
+            }
+            }),
+        })
+    } catch (err) {
+        console.log(err);
+    } finally {
+        document.getElementById('submitData').disabled = false;
+    }
+})
+
+document.getElementById('predictData').addEventListener('click', async () => {
+    let url = await chrome.tabs.query({ active: true, currentWindow: true });
+    url = url[0].url;
+    document.getElementById('submitData').disabled = true;
+    try {
+        let data=await fetch('http://localhost:7000/predict', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                data_key: url,
+                value:{shownPrice: parseInt(document.getElementById('askedPrice').value),
+                location: document.getElementById('stateSelect2').value
+            }
+            }),
+        })
+        data=await data.json()
+        alert(data.answer);
     } catch (err) {
         console.log(err);
     } finally {
