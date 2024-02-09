@@ -147,7 +147,10 @@ document.getElementById('predictData').addEventListener('click', async () => {
             }),
         })
         data=await data.json()
+        if(data.err==1)
         alert(data.answer);
+    else
+    alert(`ml:-model answer: ${data.answer.mlAns} and avg answer : ${data.answer.avg}`);
     } catch (err) {
         console.log(err);
     } finally {

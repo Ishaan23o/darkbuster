@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,Response
+from flask import Flask, request, jsonify,Response,make_response
 from flask_cors import CORS
 from sklearn.linear_model import LinearRegression
 import numpy as np
@@ -13,12 +13,46 @@ class locationClass:
         self.averageExtraPrice=0
         self.isMlModelApplicable=0
         self.mlModel=LinearRegression()
-    def fit(self,val):
+    def fit(self,val,className):
         self.totalentries+=1
         additional=(val.get("additional")+self.averageExtraPrice*(self.totalentries-1))/(self.totalentries)
         self.averageExtraPrice=additional
+        if self.totalentries>=2:
+            self.isMlModelApplicable=1
+            uri = "mongodb+srv://pbshayar:kayar@cluster0.0jztak4.mongodb.net/?retryWrites=true&w=majority"
+            client = MongoClient(uri, server_api=ServerApi('1'))
+            try:
+                client.admin.command('ping')
+                print("Pinged your deployment. You successfully connected to MongoDB!")
+            except Exception as e:
+                print(e)
+            db = client["test"]
+            collection = db["prices"]
+            cursor = collection.find({
+                "state":val.get("location"),
+                "productName":className
+            })
+            x=[]
+            y=[]
+            for data in cursor:
+                price=data.get('shownPrice')
+                additionalPrice=data.get('additionalCost')
+                x.append([price])
+                y.append(additionalPrice)
+            self.mlModel.fit(x,y)
+
     def predict(self,val):
-        return self.averageExtraPrice
+        mlAns="currently,the count is less than required for ml model"
+        if self.isMlModelApplicable==1:
+            x=[[val.get("shownPrice")]]
+            mlAns=self.mlModel.predict(x)
+            print(mlAns)
+            mlAnswer=mlAns[0]
+            print(mlAnswer)
+            mlAnswer=round(mlAnswer,2)
+        return ({"avg":self.averageExtraPrice,
+                        "mlAns":mlAnswer
+                        })
 
 class LinearRegressionModels:
     def __init__(self):
@@ -30,30 +64,24 @@ class LinearRegressionModels:
     # mydb = client["DarkBuster"]
     # mycol = mydb["test.prices"]
     def fit(self,val, className):
-        print(val)
         self.generalTotalEntries += 1
         additional = (val.get("additional") + self.generalAverageExtraPrice * (self.generalTotalEntries - 1)) / (self.generalTotalEntries)
         self.averageExtraPrice = additional
         location=val.get("location")
         locationModel = className + location
         locationModel=locationModel.replace(" ", "")
-        print(locationModel)
         model=self.locationWiseModel.get(locationModel)
         if model is None:
             self.locationWiseModel[locationModel] = locationClass()
-            self.locationWiseModel[locationModel].fit(val)
+            self.locationWiseModel[locationModel].fit(val,className)
         else:
-            model.fit(val)
+            model.fit(val,className)
 
     def predict(self,val,className):
         location = val.get("location")
         locationModel = className + location
         locationModel=locationModel.replace(" ", "")
-        print(locationModel)
-        print(len(self.locationWiseModel))
         model = self.locationWiseModel.get(locationModel)
-        for key, value in self.locationWiseModel.items():
-            print(key, value)
         if model is None:
             return "no one has added additional cost for this location.You can choose general section in location"
         else:
@@ -84,13 +112,16 @@ def predict():
     model = modelObject.get(data_key)
     if model is None:
         return jsonify({
+            "err":1,
             "answer":"no one has yet added price for this model"
         })
     else:
         ans=model.predict(val,data_key)
-        return jsonify({
+        print(ans)
+        return make_response(jsonify({
+            "err":0,
             "answer": ans
-        })
+        }))
 
 if __name__ == '__main__':
     uri = "mongodb+srv://pbshayar:kayar@cluster0.0jztak4.mongodb.net/?retryWrites=true&w=majority"
