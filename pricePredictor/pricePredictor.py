@@ -4,12 +4,15 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 app = Flask(__name__)
 CORS(app)
-import pymongo
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 class locationClass:
     def __init__(self):
         self.totalentries=0
         self.averageExtraPrice=0
+        self.isMlModelApplicable=0
+        self.mlModel=LinearRegression()
     def fit(self,val):
         self.totalentries+=1
         additional=(val.get("additional")+self.averageExtraPrice*(self.totalentries-1))/(self.totalentries)
@@ -90,4 +93,27 @@ def predict():
         })
 
 if __name__ == '__main__':
+    uri = "mongodb+srv://pbshayar:kayar@cluster0.0jztak4.mongodb.net/?retryWrites=true&w=majority"
+    client = MongoClient(uri, server_api=ServerApi('1'))
+    try:
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+    except Exception as e:
+        print(e)
+    db=client["test"]
+    collection=db["prices"]
+    cursor=collection.find()
+    for data in cursor:
+        data_key = data.get('productName')
+        val = {
+            "additional":data.get('additionalCost'),
+            "location":data.get('state')
+        }
+        model = modelObject.get(data_key)
+        if model is None:
+            cnt = cnt + 1
+            modelObject[data_key] = LinearRegressionModels()
+            modelObject[data_key].fit(val, data_key)
+        else:
+            model.fit(val, data_key)
     app.run(debug=True, port=7000)
