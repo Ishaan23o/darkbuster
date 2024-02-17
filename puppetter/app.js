@@ -67,11 +67,11 @@ const loadAmazon = async (url) => {
 	try {
 		let browser = await puppet.launch({ headless: true });
 		let page = await browser.newPage();
+		page.setDefaultNavigationTimeout(0);
 		let clickFirst = "a.a-link-emphasis:nth-child(2)"
 		await page.goto(url);
 		await page.waitForSelector(clickFirst);
 		page.click(clickFirst);
-		page.setDefaultNavigationTimeout(60000);
 		await page.waitForNavigation()
 		let comment = "#cm_cr-review_list"
 		await page.waitForSelector(comment);
@@ -122,17 +122,28 @@ const loadLocal = async (url) => {
 	await page.waitForSelector("#root > div > div > div > div.card-footer > div > div > div:nth-child(1) > div > p");
 	let comment = "#root > div > div > div > div.card-footer > div > div"
 	let pageContent = await page.evaluate((sel) => {
-		return document.querySelector(sel).innerText;
+	  return document.querySelector(sel).innerText;
 	}, comment);
 	await browser.close();
+	const regex = /(.+?)(?:\n\n|$)/g;
+	const matches = Array.from(pageContent.matchAll(regex), match => match[1]);
+	pageContent = matches.map((match, index) => `Review ${index + 1}:\n${match}).join('\n\n')`);
 	// let ask = "please summarise the following paragraph in double quotes. Try to be brief and only focus on reviews by the users, but please ensure user reviews are present in your output." + '\n';
 	let ask = "\"" + pageContent + "\"";
 	const data = await query({ "inputs": ask, "wait_for_model": "true" });
 	// let summary="Given some number of reviews, please respond whether these set of comments seem to be biased towards the product (or spam). Respond in one word biased or unbiased?"+'\n';
 	const dusra_data = await query2({ "inputs": ask });
-	return { summary: data[0], bias: dusra_data[0] };
-};
-
+	let botsFound = null;
+	if (matches.length <= 3) {
+	  botsFound = 'Enough Reviews not found to check for spam!';
+	} else {
+	  let similarity = await checkSpam(matches);
+	  if (similarity > 0.9) {
+		botsFound = 'Some Reviews are very similar, they might be spammed by bots!';
+	  } else botsFound = 'No spam detected.';
+	}
+	return { summary: data[0].generated_text, bias: dusra_data[0], botsFound };
+  };
 
 app.post("/submitPrice", mongodb.submitPrice)
 app.post("/getPrices", mongodb.getPrices)
